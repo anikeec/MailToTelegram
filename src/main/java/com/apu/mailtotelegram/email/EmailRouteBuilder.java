@@ -37,7 +37,7 @@ public class EmailRouteBuilder extends RouteBuilder {
                 + "username=" + emailSettings.emailUsername 
                 + "&password=" + emailSettings.emailPassword
                 + "&unseen=true"
-                + "&fetchSize=10"
+                + "&fetchSize=100"
                 + "&searchTerm.fromSentDate=now-24h"
                 + "&disconnect=true"
                 + "&connectionTimeout=20000"
