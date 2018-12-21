@@ -23,6 +23,34 @@ public class EmailUtils {
     private static String UTF8Q_START_ROW = "UTF-8?Q?";
 
     private static int EMAIL_SUBJECT_MAX_LENGTH = 80;
+    
+    private static int MAX_TEXT_MESS_LENGTH = 400;
+    
+    public static String handleTextPlain(Object content) 
+                            throws UnsupportedEncodingException {
+        String bodyWithoutHtml = 
+                EmailUtils.removeHtmlTags((String)content);
+        String bodyWithoutEmptyStr = 
+                EmailUtils.removeEmptyStrs(bodyWithoutHtml);
+        String bodyWithoutSpecialSymbols = 
+                EmailUtils.removeSpecialSymbols(bodyWithoutEmptyStr);
+        String decodedStr = EmailUtils.getDecodedStr(bodyWithoutSpecialSymbols);
+        if(decodedStr.length() > MAX_TEXT_MESS_LENGTH) 
+                decodedStr = decodedStr.substring(0,MAX_TEXT_MESS_LENGTH);
+        return decodedStr;
+    }
+    
+    public static String handleTextHtml(Object content) 
+                            throws UnsupportedEncodingException {
+        String bodyWithoutEmptyStr = 
+                EmailUtils.removeEmptyStrs((String)content);
+        String bodyWithoutSpecialSymbols = 
+                EmailUtils.removeSpecialSymbols(bodyWithoutEmptyStr);
+        String decodedStr = EmailUtils.getDecodedStr(bodyWithoutSpecialSymbols);
+        if(decodedStr.length() > MAX_TEXT_MESS_LENGTH) 
+            decodedStr = decodedStr.substring(0,MAX_TEXT_MESS_LENGTH);
+        return decodedStr;
+    }
 
     public static String checkEmailSubject(String subject) {
         if (subject == null)

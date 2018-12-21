@@ -24,9 +24,7 @@ import org.apache.log4j.Logger;
  * @author apu
  */
 public class Main {
-    
-    
-    
+
     private static Logger LOGGER = LogManager.getLogger(Main.class.getName());
     
     public static void main(String[] args) throws Exception {

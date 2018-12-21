@@ -45,9 +45,7 @@ public class EmailRouteBuilder extends RouteBuilder {
                 + "&consumer.delay=60000"
                 + "&debugMode=true"
         ) 
-//        .threads()
-        .log("Received a request")
-//        .to("log:emails?showAll=true&multiline=true"); 
+        .log("Received a request") 
         .process(emailRouteProcessor);
     }
     
