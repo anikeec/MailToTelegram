@@ -1,7 +1,9 @@
 package com.apu.mailtotelegram.email.utils;
 
 import com.apu.mailtotelegram.email.utils.StringUtils;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.Base64;
 import java.util.logging.Level;
@@ -21,6 +23,8 @@ public class EmailUtils {
     private static String UTF8_ENCODING = "UTF-8";
     private static String UTF8B_START_ROW = "UTF-8?B?";
     private static String UTF8Q_START_ROW = "UTF-8?Q?";
+    private static String WIN1251_ENCODING = "windows-1251";
+    private static String WIN1251B_START_ROW = "WINDOWS-1251?B?";
 
     private static int EMAIL_SUBJECT_MAX_LENGTH = 80;
     
@@ -165,6 +169,15 @@ public class EmailUtils {
             }
         } else if (str.toUpperCase().contains(UTF8Q_START_ROW)) { 
             String substring = str.substring(UTF8Q_START_ROW.length());
+            return substring;
+        } else if (str.toUpperCase().contains(WIN1251B_START_ROW)) { 
+            String substring = str.substring(WIN1251B_START_ROW.length());
+            byte[] bytes = Base64.getDecoder().decode(substring);
+            try {                
+                return new String(bytes, WIN1251_ENCODING);                
+            } catch (UnsupportedEncodingException ex) {
+                Logger.getLogger(EmailUtils.class.getName()).log(Level.SEVERE, null, ex);
+            }
             return substring;
         } else { 
             return str;

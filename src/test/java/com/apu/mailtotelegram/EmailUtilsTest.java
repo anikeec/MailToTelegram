@@ -103,15 +103,12 @@ public class EmailUtilsTest {
      * Test of getDecodedStr method, of class EmailUtils.
      */
     @Test
-    @Ignore
     public void testGetDecodedStr() throws Exception {
         System.out.println("getDecodedStr");
-        String str = "";
-        String expResult = "";
+        String str = "=?windows-1251?B?7+7k4PDu6iDv7uvz9+jy/CDx8uDi?=";
+        String expResult = "подарок получить став";
         String result = EmailUtils.getDecodedStr(str);
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
