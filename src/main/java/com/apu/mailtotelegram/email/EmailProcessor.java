@@ -3,10 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.apu.mailtotelegram;
+package com.apu.mailtotelegram.email;
 
-import com.apu.mailtotelegram.utils.EmailUtils;
-import com.apu.mailtotelegram.utils.StringUtils;
+import com.apu.mailtotelegram.settings.TelegramSettings;
+import com.apu.mailtotelegram.telegram.TelegramBot;
+import com.apu.mailtotelegram.email.utils.EmailUtils;
+import com.apu.mailtotelegram.email.utils.StringUtils;
 import com.apu.mailtotelegram.storage.FileStorage;
 import com.apu.mailtotelegram.storage.Storage;
 import java.util.Date;
@@ -28,13 +30,11 @@ public class EmailProcessor implements Processor {
     private final static Logger LOGGER = 
             LogManager.getLogger(EmailProcessor.class.getName());
     
-    private final String telegramBotToken;
-    private final String telegramChatId;    
+    private final TelegramSettings telegramSettings;    
     private final Storage<String> storage;
 
-    public EmailProcessor(String telegramBotToken, String telegramChatId) {
-        this.telegramBotToken = telegramBotToken;
-        this.telegramChatId = telegramChatId;
+    public EmailProcessor(TelegramSettings telegramSettings) {
+        this.telegramSettings = telegramSettings;
         this.storage = new FileStorage<>();     //init storage
     }    
     
@@ -134,8 +134,7 @@ public class EmailProcessor implements Processor {
                             exchange.getContext().createProducerTemplate();
 
                     TelegramBot.send(template, 
-                                    telegramBotToken, 
-                                    telegramChatId, 
+                                    telegramSettings, 
                                     sb.toString());
                     /*
                     Object response = template.requestBodyAndHeader(

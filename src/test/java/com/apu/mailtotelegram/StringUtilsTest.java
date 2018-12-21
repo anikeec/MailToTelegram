@@ -5,7 +5,7 @@
  */
 package com.apu.mailtotelegram;
 
-import com.apu.mailtotelegram.utils.StringUtils;
+import com.apu.mailtotelegram.email.utils.StringUtils;
 import java.util.Date;
 import org.junit.After;
 import org.junit.AfterClass;

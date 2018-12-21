@@ -1,6 +1,6 @@
-package com.apu.mailtotelegram.utils;
+package com.apu.mailtotelegram.email.utils;
 
-import com.apu.mailtotelegram.utils.StringUtils;
+import com.apu.mailtotelegram.email.utils.StringUtils;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Base64;

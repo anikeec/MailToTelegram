@@ -1,4 +1,4 @@
-package com.apu.mailtotelegram.utils;
+package com.apu.mailtotelegram.email.utils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

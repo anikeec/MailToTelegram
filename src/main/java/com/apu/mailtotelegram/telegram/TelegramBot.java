@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.apu.mailtotelegram;
+package com.apu.mailtotelegram.telegram;
 
+import com.apu.mailtotelegram.settings.TelegramSettings;
 import org.apache.camel.ProducerTemplate;
 
 /**
@@ -14,15 +15,14 @@ import org.apache.camel.ProducerTemplate;
 public class TelegramBot {
     
     public static void send(ProducerTemplate template, 
-                            String telegramBotToken,
-                            String telegramChatId,
+                            TelegramSettings settings,
                             String message) {
         Object response = 
                 template.requestBodyAndHeader(
-                        "telegram:bots/" + telegramBotToken, 
+                        "telegram:bots/" + settings.telegramBotToken, 
                         message,
                         "CamelTelegramChatId",
-                        telegramChatId);
+                        settings.telegramChatId);
     }
     
 }

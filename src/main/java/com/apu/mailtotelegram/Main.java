@@ -5,6 +5,11 @@
  */
 package com.apu.mailtotelegram;
 
+import com.apu.mailtotelegram.email.EmailRouteBuilder;
+import com.apu.mailtotelegram.email.EmailProcessor;
+import com.apu.mailtotelegram.settings.EmailSettings;
+import com.apu.mailtotelegram.settings.Settings;
+import com.apu.mailtotelegram.settings.TelegramSettings;
 import com.apu.mailtotelegram.storage.SettingsStorage;
 import java.util.Properties;
 import org.apache.camel.CamelContext;
@@ -20,86 +25,29 @@ import org.apache.log4j.Logger;
  */
 public class Main {
     
-    private static String EMAIL_HOST_PROPERTY = "email.host";
-    private static String EMAIL_PORT_PROPERTY = "email.port";
-    private static String EMAIL_USERNAME_PROPERTY = "email.username";
-    private static String EMAIL_PASSWORD_PROPERTY = "email.password";
-    private static String TELEGRAM_BOT_TOKEN_PROPERTY = "telegram.bot.token";
-    private static String TELEGRAM_CHAT_ID_PROPERTY = "telegram.chat.id";
+    
     
     private static Logger LOGGER = LogManager.getLogger(Main.class.getName());
     
     public static void main(String[] args) throws Exception {
         
         System.setProperty("mail.mime.multipart.ignoreexistingboundaryparameter", "true");
+
+        //load settings from file
+        EmailSettings emailSettings = new EmailSettings();
+        Settings.loadEmailSettingsFromFile(emailSettings);
         
-        //load settings
-        Properties emailProperties = SettingsStorage.loadPropertiesFromFile();
-        final String emailHost;
-        final String emailPort;
-        final String emailUsername;
-        final String emailPassword;
-        final String telegramBotToken;
-        final String telegramChatId;
-        
-        if(emailProperties.containsKey(EMAIL_HOST_PROPERTY)) 
-            emailHost = emailProperties.getProperty(EMAIL_HOST_PROPERTY);
-        else
-            throw new IllegalArgumentException("Needed parametes is absent.");
-        
-        if(emailProperties.containsKey(EMAIL_PORT_PROPERTY)) 
-            emailPort = emailProperties.getProperty(EMAIL_PORT_PROPERTY);
-        else
-            throw new IllegalArgumentException("Needed parametes is absent.");
-        
-        if(emailProperties.containsKey(EMAIL_USERNAME_PROPERTY)) 
-            emailUsername = emailProperties.getProperty(EMAIL_USERNAME_PROPERTY);
-        else
-            throw new IllegalArgumentException("Needed parametes is absent.");
-        
-        if(emailProperties.containsKey(EMAIL_PASSWORD_PROPERTY)) 
-            emailPassword = emailProperties.getProperty(EMAIL_PASSWORD_PROPERTY);
-        else
-            throw new IllegalArgumentException("Needed parametes is absent.");
-        
-        if(emailProperties.containsKey(TELEGRAM_BOT_TOKEN_PROPERTY)) 
-            telegramBotToken = emailProperties.getProperty(TELEGRAM_BOT_TOKEN_PROPERTY);
-        else
-            throw new IllegalArgumentException("Needed parametes is absent.");
-        
-        if(emailProperties.containsKey(TELEGRAM_CHAT_ID_PROPERTY)) 
-            telegramChatId = emailProperties.getProperty(TELEGRAM_CHAT_ID_PROPERTY);
-        else
-            throw new IllegalArgumentException("Needed parametes is absent.");
+        TelegramSettings telegramSettings = new TelegramSettings();
+        Settings.loadTelegramSettingsFromFile(telegramSettings);
         
         CamelContext context = new DefaultCamelContext();        
         try {  
             Processor emailRouteProcessor = 
-                    new EmailProcessor(telegramBotToken, telegramChatId);
+                    new EmailProcessor(telegramSettings);
 
-            RouteBuilder emailRouteBuilder = new RouteBuilder() {
-                public void configure() {
-                    from("pop3://" 
-                            + emailHost + ":" + emailPort 
-                            + "?"
-                            + "username=" + emailUsername 
-                            + "&password=" + emailPassword
-                            + "&unseen=true"
-                            + "&fetchSize=10"
-                            + "&searchTerm.fromSentDate=now-24h"
-//                            + "&consumer.useFixedDelay=true"
-                            + "&disconnect=true"
-                            + "&connectionTimeout=20000"
-                            + "&consumer.initialDelay=1000"
-                            + "&consumer.delay=60000"
-                            + "&debugMode=true"
-                    ) 
-                    //.threads()
-                    .log("Received a request")
-//                            .to("log:emails?showAll=true&multiline=true"); 
-                    .process(emailRouteProcessor);
-                  }
-              }; 
+            RouteBuilder emailRouteBuilder = 
+                    new EmailRouteBuilder(emailRouteProcessor, 
+                                            emailSettings); 
 
             context.addRoutes(emailRouteBuilder);               
             context.start();        
