@@ -10,8 +10,7 @@ import com.apu.mailtotelegram.email.EmailProcessor;
 import com.apu.mailtotelegram.settings.EmailSettings;
 import com.apu.mailtotelegram.settings.Settings;
 import com.apu.mailtotelegram.settings.TelegramSettings;
-import com.apu.mailtotelegram.storage.SettingsStorage;
-import java.util.Properties;
+import com.apu.mailtotelegram.utils.log.Logging;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
@@ -28,6 +27,8 @@ public class Main {
     private static Logger LOGGER = LogManager.getLogger(Main.class.getName());
     
     public static void main(String[] args) throws Exception {
+        
+        System.setOut(Logging.createLoggingProxy(System.out));
         
         System.setProperty("mail.mime.multipart.ignoreexistingboundaryparameter", "true");
 
