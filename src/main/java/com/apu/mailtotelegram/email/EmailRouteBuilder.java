@@ -5,7 +5,9 @@
  */
 package com.apu.mailtotelegram.email;
 
+import com.apu.mailtotelegram.error.ErrorProcessor;
 import com.apu.mailtotelegram.settings.EmailSettings;
+import org.apache.camel.LoggingLevel;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.log4j.LogManager;
@@ -31,6 +33,14 @@ public class EmailRouteBuilder extends RouteBuilder {
 
     @Override
     public void configure() throws Exception {
+        
+        onException(Exception.class)
+                .process(new ErrorProcessor())
+                .log(LoggingLevel.ERROR, "Received body - ${body}")
+                .log(LoggingLevel.ERROR, "Exception message - ${exception.message}")
+                .log(LoggingLevel.ERROR, "Exception stacktrace - ${exception.stacktrace}")
+                .handled(true);
+        
         from("pop3://" 
                 + emailSettings.emailHost + ":" + emailSettings.emailPort 
                 + "?"
