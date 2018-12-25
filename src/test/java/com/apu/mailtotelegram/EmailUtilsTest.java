@@ -6,6 +6,8 @@
 package com.apu.mailtotelegram;
 
 import com.apu.mailtotelegram.email.utils.EmailUtils;
+import java.io.UnsupportedEncodingException;
+import javax.mail.internet.MimeUtility;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -40,51 +42,6 @@ public class EmailUtilsTest {
     }
 
     /**
-     * Test of checkEmailSubject method, of class EmailUtils.
-     */
-    @Test
-    @Ignore
-    public void testCheckEmailSubject() {
-        System.out.println("checkEmailSubject");
-        String subject = "";
-        String expResult = "";
-        String result = EmailUtils.checkEmailSubject(subject);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of checkEmailDirectory method, of class EmailUtils.
-     */
-    @Test
-    @Ignore
-    public void testCheckEmailDirectory() {
-        System.out.println("checkEmailDirectory");
-        String str = "";
-        String expResult = "";
-        String result = EmailUtils.checkEmailDirectory(str);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of chechFileNameCoding method, of class EmailUtils.
-     */
-    @Test
-    @Ignore
-    public void testChechFileNameCoding() throws Exception {
-        System.out.println("chechFileNameCoding");
-        String fileName = "";
-        String expResult = "";
-        String result = EmailUtils.chechFileNameCoding(fileName);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
      * Test of removePunctFromEmail method, of class EmailUtils.
      */
     @Test
@@ -105,58 +62,35 @@ public class EmailUtilsTest {
     @Test
     public void testGetDecodedStr() throws Exception {
         System.out.println("getDecodedStr");
-        String str = "=?windows-1251?B?7+7k4PDu6iDv7uvz9+jy/CDx8uDi?=";
-        String expResult = "подарок получить став";
+        
+        String expResult = "Строка для кодирования.";
+        
+        String str = "=?windows-1251?B?0fLw7urgIOTr/yDq7uTo8O7i4O3o/y4=?=";        
         String result = EmailUtils.getDecodedStr(str);
         assertEquals(expResult, result);
-    }
-
-    /**
-     * Test of getNextEncodedPart method, of class EmailUtils.
-     */
-    @Test
-    @Ignore
-    public void testGetNextEncodedPart() {
-        System.out.println("getNextEncodedPart");
-        String str = "";
-        String startStr = "";
-        String endStr = "";
-        EmailUtils.RowPart expResult = null;
-        EmailUtils.RowPart result = EmailUtils.getNextEncodedPart(str, startStr, endStr);
+        
+        str = "=?windows-1251?Q?=D1=F2=F0=EE=EA=E0_=E4=EB=FF_?= "
+                + "=?windows-1251?Q?=EA=EE=E4=E8=F0=EE=E2=E0=ED=E8=FF.?=";
+        result = EmailUtils.getDecodedStr(str);
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of decodePart method, of class EmailUtils.
-     */
-    @Test
-    @Ignore
-    public void testDecodePart() {
-        System.out.println("decodePart");
-        String str = "";
-        String expResult = "";
-        String result = EmailUtils.decodePart(str);
+        
+        str = "=?koi8-r?B?89TSz8vBIMTM0SDLz8TJ0s/Xwc7J0S4=?=";
+        result = EmailUtils.getDecodedStr(str);
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of replaceEncodedPart method, of class EmailUtils.
-     */
-    @Test
-    @Ignore
-    public void testReplaceEncodedPart() {
-        System.out.println("replaceEncodedPart");
-        String strSrc = "";
-        EmailUtils.RowPart rowPart = null;
-        String expResult = "";
-        String result = EmailUtils.replaceEncodedPart(strSrc, rowPart);
+        
+        str = "=?koi8-r?Q?=F3=D4=D2=CF=CB=C1_=C4=CC=D1_?= =?koi8-r?Q?=CB=CF=C4=C9=D2=CF=D7=C1=CE=C9=D1.?=";
+        result = EmailUtils.getDecodedStr(str);
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        
+        str = "=?utf-8?B?0KHRgtGA0L7QutCwINC00LvRjyDQutC+0LTQuNGA0L7QstCw0L3QuNGPLg==?=";
+        result = EmailUtils.getDecodedStr(str);
+        assertEquals(expResult, result);
+        
+        str = "=?utf-8?Q?=D0=A1=D1=82=D1=80=D0=BE=D0=BA=D0=B0_=D0=B4=D0=BB=D1=8F_?= "
+            + "=?utf-8?Q?=D0=BA=D0=BE=D0=B4=D0=B8=D1=80=D0=BE?= =?utf-8?Q?=D0=B2=D0=B0=D0=BD=D0=B8=D1=8F.?=";
+        result = EmailUtils.getDecodedStr(str);
+        assertEquals(expResult, result);      
+                
     }
 
     /**

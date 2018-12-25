@@ -40,9 +40,10 @@ public class EmailUtils {
     public static String getDecodedStr(String str) throws UnsupportedEncodingException {
         Pattern p = 
             Pattern.compile("\\=\\?"
-                    + "(utf-8|UTF-8|windows-1251|koi8-r)\\?"
+                    + "(utf-8|UTF-8|windows-1251|WINDOWS-1251|koi8-r|KOI8-R)\\?"
                     + "(Q|B)\\?"
-                    + ".+?\\?\\="); //used lazy mode ("x.+?x" //it is a lazy mode)
+                    + ".+?"         //used lazy mode ("x.+?x" //it is a lazy mode)
+                    + "\\?\\="); 
         Matcher m = p.matcher(str);
         StringBuilder sbDecoded = new StringBuilder();
         while(m.find()){
