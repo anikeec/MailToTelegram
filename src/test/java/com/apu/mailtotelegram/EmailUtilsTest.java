@@ -63,34 +63,50 @@ public class EmailUtilsTest {
     public void testGetDecodedStr() throws Exception {
         System.out.println("getDecodedStr");
         
-        String expResult = "Строка для кодирования.";
-        
-        String str = "=?windows-1251?B?0fLw7urgIOTr/yDq7uTo8O7i4O3o/y4=?=";        
-        String result = EmailUtils.getDecodedStr(str);
-        assertEquals(expResult, result);
-        
-        str = "=?windows-1251?Q?=D1=F2=F0=EE=EA=E0_=E4=EB=FF_?= "
-                + "=?windows-1251?Q?=EA=EE=E4=E8=F0=EE=E2=E0=ED=E8=FF.?=";
+        String expResult = "Это текст for encoding.";
+        String str, result;        
+//        String str = expResult;
+//        String textWin1251b = MimeUtility.encodeText(str, "windows-1251", "B");
+//        String textWin1251q = MimeUtility.encodeText(str, "windows-1251", "Q");
+//        String textKoi8rB = MimeUtility.encodeText(str, "koi8-r", "B");
+//        String textKoi8rQ = MimeUtility.encodeText(str, "koi8-r", "Q");
+//        String textUtf8B = MimeUtility.encodeText(str, "utf-8", "B");
+//        String textUtf8Q = MimeUtility.encodeText(str, "utf-8", "Q"); 
+
+        str = "=?windows-1251?B?3fLuIPLl6vHyIGZvciBlbmNvZGluZy4=?=";        
         result = EmailUtils.getDecodedStr(str);
         assertEquals(expResult, result);
         
-        str = "=?koi8-r?B?89TSz8vBIMTM0SDLz8TJ0s/Xwc7J0S4=?=";
+        str = "=?windows-1251?Q?=DD=F2=EE_=F2=E5=EA=F1=F2_for_encoding.?=";
         result = EmailUtils.getDecodedStr(str);
         assertEquals(expResult, result);
         
-        str = "=?koi8-r?Q?=F3=D4=D2=CF=CB=C1_=C4=CC=D1_?= =?koi8-r?Q?=CB=CF=C4=C9=D2=CF=D7=C1=CE=C9=D1.?=";
+        str = "=?koi8-r?B?/NTPINTFy9PUIGZvciBlbmNvZGluZy4=?=";
         result = EmailUtils.getDecodedStr(str);
         assertEquals(expResult, result);
         
-        str = "=?utf-8?B?0KHRgtGA0L7QutCwINC00LvRjyDQutC+0LTQuNGA0L7QstCw0L3QuNGPLg==?=";
+        str = "=?koi8-r?Q?=FC=D4=CF_=D4=C5=CB=D3=D4_for_encoding.?=";
         result = EmailUtils.getDecodedStr(str);
         assertEquals(expResult, result);
         
-        str = "=?utf-8?Q?=D0=A1=D1=82=D1=80=D0=BE=D0=BA=D0=B0_=D0=B4=D0=BB=D1=8F_?= "
-            + "=?utf-8?Q?=D0=BA=D0=BE=D0=B4=D0=B8=D1=80=D0=BE?= =?utf-8?Q?=D0=B2=D0=B0=D0=BD=D0=B8=D1=8F.?=";
+        str = "=?utf-8?B?0K3RgtC+INGC0LXQutGB0YIgZm9yIGVuY29kaW5nLg==?=";
+        result = EmailUtils.getDecodedStr(str);
+        assertEquals(expResult, result);
+        
+        str = "=?utf-8?Q?=D0=AD=D1=82=D0=BE_=D1=82=D0=B5=D0=BA=D1=81=D1=82_for_encoding.?=";
         result = EmailUtils.getDecodedStr(str);
         assertEquals(expResult, result);      
-                
+        
+        str = "It is a text=?koi8-r?Q?=FC=D4=CF_=D4=C5=CB=D3=D4_for_encoding.?=";
+        result = EmailUtils.getDecodedStr(str);
+        assertEquals("It is a text" + expResult, result);
+        
+        str = "It is a text=?koi8-r?Q?=FC=D4=CF_=D4=C5=CB=D3=D4_for_encoding.?="
+                + " add other part "
+                + "=?koi8-r?Q?=FC=D4=CF_=D4=C5=CB=D3=D4_for_encoding.?=";
+        result = EmailUtils.getDecodedStr(str);
+        assertEquals("It is a text" + expResult + " add other part " + expResult, result);
+        
     }
 
     /**

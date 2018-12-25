@@ -42,17 +42,24 @@ public class EmailUtils {
             Pattern.compile("\\=\\?"
                     + "(utf-8|UTF-8|windows-1251|WINDOWS-1251|koi8-r|KOI8-R)\\?"
                     + "(Q|B)\\?"
-                    + ".+?"         //used lazy mode ("x.+?x" //it is a lazy mode)
-                    + "\\?\\="); 
+                    + ".+?\\?\\="); //used lazy mode ("x.+?x" //it is a lazy mode)
         Matcher m = p.matcher(str);
         StringBuilder sbDecoded = new StringBuilder();
+        int tempPosition = 0;
         while(m.find()){
             int st = m.start();
+            if(st > (tempPosition + 1)) {
+                sbDecoded.append(str.substring(tempPosition, st));
+            }
             int end = m.end();
             String matchedStr =  m.group();
             String decodedText = MimeUtility.decodeText(matchedStr);
             sbDecoded.append(decodedText);          
-        }       
+            tempPosition = end;
+        }  
+        if((str.length() - 1) > tempPosition) {
+            sbDecoded.append(str.substring(tempPosition, str.length() - 1));
+        }
         return sbDecoded.toString();
     }    
     
