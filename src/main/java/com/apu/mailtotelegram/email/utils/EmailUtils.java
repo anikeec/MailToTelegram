@@ -8,6 +8,8 @@ import java.io.UnsupportedEncodingException;
 import java.util.Base64;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.mail.internet.MimeUtility;
 
@@ -121,22 +123,37 @@ public class EmailUtils {
     }
     
     public static String getDecodedStr(String str) throws UnsupportedEncodingException {
-        RowPart findedPart;
-        do {
-            findedPart = getNextEncodedPart(str, START_ENCODED_SYMBOLS, END_ENCODED_SYMBOLS);
-            if((findedPart != null)&&(findedPart.encoded == true)) {
-                findedPart.strDecoded = decodePart(findedPart.str);
-                str = replaceEncodedPart(str, findedPart);
-            }
-        } while(findedPart != null);
-        //str = checkForErrorDecoding(str);
-        return str;
+        Pattern p = 
+            Pattern.compile("\\=\\?"
+                    + "(utf-8|UTF-8|windows-1251|koi8-r)\\?"
+                    + "(Q|B)\\?"
+                    + ".+?\\?\\="); //used lazy mode ("x.+?x" //it is a lazy mode)
+        Matcher m = p.matcher(str);
+        StringBuilder sbDecoded = new StringBuilder();
+        while(m.find()){
+            int st = m.start();
+            int end = m.end();
+            String matchedStr =  m.group();
+            String decodedText = MimeUtility.decodeText(matchedStr);
+            sbDecoded.append(decodedText);          
+        }       
+        return sbDecoded.toString();
+//        RowPart findedPart;
+//        do {
+//            findedPart = getNextEncodedPart(str, START_ENCODED_SYMBOLS, END_ENCODED_SYMBOLS);
+//            if((findedPart != null)&&(findedPart.encoded == true)) {
+//                findedPart.strDecoded = decodePart(findedPart.str);
+//                str = replaceEncodedPart(str, findedPart);
+//            }
+//        } while(findedPart != null);
+//        //str = checkForErrorDecoding(str);
+//        return str;
     }
     
     public static RowPart getNextEncodedPart(String str, String startStr, String endStr) {
         int startIndex = str.indexOf(startStr);
         if (startIndex == -1)
-            return null;
+            return null;        
         int endIndex = str.indexOf(endStr, startIndex + 1);
         if (endIndex == -1)
             return null;
@@ -145,7 +162,7 @@ public class EmailUtils {
         return retPart;
     }
     
-    public static String decodePart(String str) {
+    public static String decodePart(String str) throws UnsupportedEncodingException {
         if (str.length() < 5)
                 return str;
         String substrCoding;
@@ -168,7 +185,8 @@ public class EmailUtils {
                 Logger.getLogger(EmailUtils.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else if (str.toUpperCase().contains(UTF8Q_START_ROW)) { 
-            String substring = str.substring(UTF8Q_START_ROW.length());
+//            String substring = str.substring(UTF8Q_START_ROW.length());            
+            String substring = MimeUtility.decodeText("=?" + str + "?=");//, "quoted-printable"
             return substring;
         } else if (str.toUpperCase().contains(WIN1251B_START_ROW)) { 
             String substring = str.substring(WIN1251B_START_ROW.length());
