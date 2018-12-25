@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.apu.mailtotelegram;
+package com.apu.mailtotelegram.email.utils;
 
 import com.apu.mailtotelegram.email.utils.StringUtils;
 import java.util.Date;

@@ -3,15 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.apu.mailtotelegram;
+package com.apu.mailtotelegram.email.utils;
 
-import com.apu.mailtotelegram.email.utils.EmailUtils;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Ignore;
 
 /**
  *
@@ -37,16 +37,46 @@ public class EmailUtilsTest {
     @After
     public void tearDown() {
     }
-
+    
     /**
-     * Test of removePunctFromEmail method, of class EmailUtils.
+     * Test of handleTextPlain method, of class EmailUtils.
      */
     @Test
-    public void testRemovePunctFromEmail() {
-        System.out.println("removePunctFromEmail");
-        String str = "This$ is! a[ test~ text]";
-        String expResult = "This is a test text";
-        String result = EmailUtils.removePunctFromEmail(str);
+    @Ignore
+    public void testHandleTextPlain() throws Exception {
+        System.out.println("handleTextPlain");
+        Object content = null;
+        String expResult = "";
+        String result = EmailUtils.handleTextPlain(content);
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
+
+    /**
+     * Test of handleTextHtml method, of class EmailUtils.
+     */
+    @Test
+    @Ignore
+    public void testHandleTextHtml() throws Exception {
+        System.out.println("handleTextHtml");
+        Object content = null;
+        String expResult = "";
+        String result = EmailUtils.handleTextHtml(content);
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
+
+    /**
+     * Test of extractAddressesFromEmail method, of class EmailUtils.
+     */
+    @Test
+    public void testExtractAddressesFromEmail() {
+        System.out.println("extractAddressesFromEmail");
+        String str = "Temp email <temp@ukr.net>;other email<o_email@gmail.temp.org";
+        String expResult = "\r\ntemp@ukr.net\r\no_email@gmail.temp.org";
+        String result = EmailUtils.extractAddressesFromEmail(str);
         assertEquals(expResult, result);
     }
 
@@ -94,6 +124,18 @@ public class EmailUtilsTest {
         result = EmailUtils.getDecodedStr(str);
         assertEquals("It is a text" + expResult + " add other part " + expResult, result);
         
+    }
+    
+    /**
+     * Test of removePunctFromEmail method, of class EmailUtils.
+     */
+    @Test
+    public void testRemovePunctFromEmail() {
+        System.out.println("removePunctFromEmail");
+        String str = "This$ is! a[ test~ text]";
+        String expResult = "This is a test text";
+        String result = EmailUtils.removePunctFromEmail(str);
+        assertEquals(expResult, result);
     }
 
     /**
@@ -183,6 +225,21 @@ public class EmailUtilsTest {
         String expResult = "<span>Ltd.</span>";
         String result = EmailUtils.removeSpecialSymbols(content);
         assertEquals(expResult, result);
+    }
+    
+    /**
+     * Test of removeCSS method, of class EmailUtils.
+     */
+    @Test
+    @Ignore
+    public void testRemoveCSS() {
+        System.out.println("removeCSS");
+        String content = "";
+        String expResult = "";
+        String result = EmailUtils.removeCSS(content);
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
     }
     
 }
