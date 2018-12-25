@@ -6,15 +6,12 @@
 package com.apu.mailtotelegram;
 
 import com.apu.mailtotelegram.email.utils.EmailUtils;
-import java.io.UnsupportedEncodingException;
-import javax.mail.internet.MimeUtility;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import org.junit.Ignore;
 
 /**
  *
@@ -45,15 +42,12 @@ public class EmailUtilsTest {
      * Test of removePunctFromEmail method, of class EmailUtils.
      */
     @Test
-    @Ignore
     public void testRemovePunctFromEmail() {
         System.out.println("removePunctFromEmail");
-        String str = "";
-        String expResult = "";
+        String str = "This$ is! a[ test~ text]";
+        String expResult = "This is a test text";
         String result = EmailUtils.removePunctFromEmail(str);
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
@@ -64,14 +58,7 @@ public class EmailUtilsTest {
         System.out.println("getDecodedStr");
         
         String expResult = "Это текст for encoding.";
-        String str, result;        
-//        String str = expResult;
-//        String textWin1251b = MimeUtility.encodeText(str, "windows-1251", "B");
-//        String textWin1251q = MimeUtility.encodeText(str, "windows-1251", "Q");
-//        String textKoi8rB = MimeUtility.encodeText(str, "koi8-r", "B");
-//        String textKoi8rQ = MimeUtility.encodeText(str, "koi8-r", "Q");
-//        String textUtf8B = MimeUtility.encodeText(str, "utf-8", "B");
-//        String textUtf8Q = MimeUtility.encodeText(str, "utf-8", "Q"); 
+        String str, result;         
 
         str = "=?windows-1251?B?3fLuIPLl6vHyIGZvciBlbmNvZGluZy4=?=";        
         result = EmailUtils.getDecodedStr(str);
@@ -160,8 +147,8 @@ public class EmailUtilsTest {
     @Test
     public void testRemoveHtmlTags() {
         System.out.println("removeHtmlTags");
-        String content = "";
-        String expResult = "";
+        String content = "<p>text for testing.</p>Text";
+        String expResult = "text for testing.Text";
         String result = EmailUtils.removeHtmlTags(content);
         assertEquals(expResult, result);
     }
