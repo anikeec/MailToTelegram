@@ -83,20 +83,29 @@ public class EmailProcessor implements Processor {
 
         sb.append("Message.").append("\r\n");
         
-        if(headTo != null)
+        if(headTo != null) {
+            String decodedAddrTo = 
+                    EmailUtils.getDecodedStr((String)headTo);
             sb.append("To: ")
-                .append(EmailUtils.getDecodedStr((String)headTo))
+                .append(EmailUtils.extractAddressesFromEmail(decodedAddrTo))
                 .append("\r\n");
+        }
         
-        if(headFrom != null)
+        if(headFrom != null) {
+            String decodedAddrFrom = 
+                    EmailUtils.getDecodedStr((String)headFrom);
             sb.append("From: ")
-                .append(EmailUtils.getDecodedStr((String)headFrom))
+                .append(EmailUtils.extractAddressesFromEmail(decodedAddrFrom))
                 .append("\r\n");
+        }
         
-        if(headCopy != null)
+        if(headCopy != null) {
+            String decodedAddrCopy = 
+                    EmailUtils.getDecodedStr((String)headCopy);
             sb.append("Copy: ")
-                .append(EmailUtils.getDecodedStr((String)headCopy))
+                .append(EmailUtils.extractAddressesFromEmail(decodedAddrCopy))
                 .append("\r\n");
+        }
         
         sb.append("Date: ")
                 .append(StringUtils.dateFormat(date))
@@ -104,6 +113,7 @@ public class EmailProcessor implements Processor {
         
         if(headSubject != null)
             sb.append("Subject: ")
+                .append("\r\n")
                 .append(EmailUtils.getDecodedStr((String)headSubject))
                 .append("\r\n");
 
