@@ -68,17 +68,6 @@ public class EmailProcessor implements Processor {
             storage.add(messageUidStr);
         }
 
-        Date date = null;
-        if(headDate != null) {
-            date = StringUtils.dateFormat((String)headDate);
-            Date nowaday = 
-                StringUtils.dateFormat("Wed, 19 Dec 2018 15:00:00 +0300");
-            if(date.compareTo(nowaday) < 0) {
-                System.out.println("Old message");
-                return;
-            }
-        }
-
         StringBuilder sb = new StringBuilder();
 
         sb.append("Message.").append("\r\n");
@@ -107,9 +96,12 @@ public class EmailProcessor implements Processor {
                 .append("\r\n");
         }
         
-        sb.append("Date: ")
+        if(headDate != null) {
+            Date date = StringUtils.dateFormat((String)headDate);
+            sb.append("Date: ")
                 .append(StringUtils.dateFormat(date))
                 .append("\r\n");
+        }        
         
         if(headSubject != null)
             sb.append("Subject: ")
