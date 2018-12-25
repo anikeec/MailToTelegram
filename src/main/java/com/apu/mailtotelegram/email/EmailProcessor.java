@@ -104,7 +104,7 @@ public class EmailProcessor implements Processor {
         
         if(headSubject != null)
             sb.append("Subject: ")
-                .append(EmailUtils.checkEmailSubject((String)headSubject))
+                .append(EmailUtils.getDecodedStr((String)headSubject))
                 .append("\r\n");
 
         String content = (String)headers.get("content-Type");        
