@@ -58,7 +58,7 @@ public class EmailUtils {
             tempPosition = end;
         }  
         if((str.length() - 1) > tempPosition) {
-            sbDecoded.append(str.substring(tempPosition, str.length() - 1));
+            sbDecoded.append(str.substring(tempPosition, str.length()));
         }
         return sbDecoded.toString();
     }    
