@@ -61,6 +61,7 @@ public class EmailProcessor implements Processor {
             // check if this message has already received
             if (storage.find(messageUidStr)) {
                 LOGGER.info("MESSAGE with id " + messageUidStr + " exist.");
+                exchange.setProperty(Exchange.ROUTE_STOP, Boolean.TRUE); 
                 return;
             }
             storage.add(messageUidStr);
