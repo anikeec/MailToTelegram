@@ -6,7 +6,6 @@
 package com.apu.mailtotelegram.email;
 
 import com.apu.mailtotelegram.settings.TelegramSettings;
-import com.apu.mailtotelegram.telegram.TelegramBot;
 import com.apu.mailtotelegram.email.utils.EmailUtils;
 import com.apu.mailtotelegram.email.utils.StringUtils;
 import com.apu.mailtotelegram.storage.FileStorage;
@@ -17,7 +16,6 @@ import javax.mail.BodyPart;
 import javax.mail.internet.MimeMultipart;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
-import org.apache.camel.ProducerTemplate;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -126,7 +124,7 @@ public class EmailProcessor implements Processor {
                 contentObj = bp.getContent();
                 if(contentType.contains("text/plain") && (contentObj != null)) {
                     sb.append(EmailUtils.handleTextPlain(contentObj));
-                } else if(content.contains("text/html") && (contentObj != null)) {
+                } else if(contentType.contains("text/html") && (contentObj != null)) {
                     sb.append(EmailUtils.handleTextHtml(contentObj));
                 }                       
             }
@@ -139,25 +137,9 @@ public class EmailProcessor implements Processor {
         }
 
         sb.append("\r\n");
-
-        ProducerTemplate template = 
-                exchange.getContext().createProducerTemplate();
-
-        TelegramBot.send(template, 
-                        telegramSettings, 
-                        sb.toString());
-        /*
-        Object response = template.requestBodyAndHeader(
-              "telegram:bots/" + telegramBotToken, 
-              sb.toString(),
-              "CamelTelegramChatId",
-              telegramChatId);
-        */
-//                    exchange.getOut().setBody(pktdata + "\r\n" 
-//                        + name + "\r\n"
-//                        + response
-//                        );
-        template.stop();
+        
+        exchange.getIn().setBody(sb.toString());
+        
     }
     
 }

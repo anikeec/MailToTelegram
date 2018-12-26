@@ -7,6 +7,7 @@ package com.apu.mailtotelegram.email;
 
 import com.apu.mailtotelegram.error.ErrorProcessor;
 import com.apu.mailtotelegram.settings.EmailSettings;
+import com.apu.mailtotelegram.settings.TelegramSettings;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
@@ -24,11 +25,14 @@ public class EmailRouteBuilder extends RouteBuilder {
     
     private final Processor emailRouteProcessor;
     private final EmailSettings emailSettings;
+    private final TelegramSettings telegramSettings;
 
     public EmailRouteBuilder(Processor emailRouteProcessor, 
-                                EmailSettings emailSettings) {
+                                EmailSettings emailSettings,
+                                TelegramSettings telegramSettings) {
         this.emailRouteProcessor = emailRouteProcessor;
         this.emailSettings = emailSettings;
+        this.telegramSettings = telegramSettings;
     }    
 
     @Override
@@ -36,9 +40,6 @@ public class EmailRouteBuilder extends RouteBuilder {
         
         onException(Exception.class)
                 .process(new ErrorProcessor())
-                .log(LoggingLevel.ERROR, "Received body - ${body}")
-                .log(LoggingLevel.ERROR, "Exception message - ${exception.message}")
-                .log(LoggingLevel.ERROR, "Exception stacktrace - ${exception.stacktrace}")
                 .handled(true);
         
         from("pop3://" 
@@ -52,11 +53,13 @@ public class EmailRouteBuilder extends RouteBuilder {
                 + "&disconnect=true"
                 + "&connectionTimeout=20000"
                 + "&consumer.initialDelay=1000"
-                + "&consumer.delay=60000"
+                + "&consumer.delay=600000"
                 + "&debugMode=true"
         ) 
         .log("Received a request") 
-        .process(emailRouteProcessor);
+        .process(emailRouteProcessor)
+        .setHeader("CamelTelegramChatId", constant(telegramSettings.telegramChatId))
+        .inOnly("telegram:bots/" + telegramSettings.telegramBotToken);
     }
     
 }

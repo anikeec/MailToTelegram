@@ -46,7 +46,8 @@ public class Main {
 
             RouteBuilder emailRouteBuilder = 
                     new EmailRouteBuilder(emailRouteProcessor, 
-                                            emailSettings); 
+                                            emailSettings,
+                                            telegramSettings); 
 
             context.addRoutes(emailRouteBuilder);               
             context.start();        
