@@ -5,7 +5,6 @@
  */
 package com.apu.mailtotelegram.email;
 
-import com.apu.mailtotelegram.settings.TelegramSettings;
 import com.apu.mailtotelegram.email.utils.EmailUtils;
 import com.apu.mailtotelegram.email.utils.StringUtils;
 import com.apu.mailtotelegram.storage.FileStorage;
@@ -30,11 +29,9 @@ public class EmailProcessor implements Processor {
     private final static Logger LOGGER = 
             LogManager.getLogger(EmailProcessor.class.getName());
     
-    private final TelegramSettings telegramSettings;    
     private final Storage<String> storage;
 
-    public EmailProcessor(TelegramSettings telegramSettings) {
-        this.telegramSettings = telegramSettings;
+    public EmailProcessor() {
         this.storage = new FileStorage<>();     //init storage
     }    
     

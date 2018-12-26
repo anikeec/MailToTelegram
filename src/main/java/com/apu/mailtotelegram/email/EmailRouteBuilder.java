@@ -5,9 +5,6 @@
  */
 package com.apu.mailtotelegram.email;
 
-import com.apu.mailtotelegram.error.ErrorProcessor;
-import com.apu.mailtotelegram.settings.EmailSettings;
-import com.apu.mailtotelegram.settings.TelegramSettings;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
@@ -23,43 +20,39 @@ public class EmailRouteBuilder extends RouteBuilder {
     private final static Logger LOGGER = 
             LogManager.getLogger(EmailRouteBuilder.class.getName());
     
-    private final Processor emailRouteProcessor;
-    private final EmailSettings emailSettings;
-    private final TelegramSettings telegramSettings;
+    private final Processor fromRouteProcessor;
+    private final Processor errorProcessor;
+    private final Processor toRouteProcessor;
+    private final String fromUri;
+    private final String toUri;
 
-    public EmailRouteBuilder(Processor emailRouteProcessor, 
-                                EmailSettings emailSettings,
-                                TelegramSettings telegramSettings) {
-        this.emailRouteProcessor = emailRouteProcessor;
-        this.emailSettings = emailSettings;
-        this.telegramSettings = telegramSettings;
+    public EmailRouteBuilder(String fromUri,
+                                Processor fromRouteProcessor,                           
+                                Processor toRouteProcessor,
+                                String toUri,
+                                Processor errorProcessor) {
+        this.fromRouteProcessor = fromRouteProcessor;
+        this.errorProcessor = errorProcessor;
+        this.toRouteProcessor = toRouteProcessor;
+        this.fromUri = fromUri;
+        this.toUri = toUri;
     }    
 
     @Override
     public void configure() throws Exception {
         
         onException(Exception.class)
-                .process(new ErrorProcessor())
+                .process(errorProcessor)
+                .log(LoggingLevel.ERROR, "Received body - ${body}")
+                .log(LoggingLevel.ERROR, "Exception message - ${exception.message}")
+                .log(LoggingLevel.ERROR, "Exception stacktrace - ${exception.stacktrace}")
                 .handled(true);
         
-        from("pop3://" 
-                + emailSettings.emailHost + ":" + emailSettings.emailPort 
-                + "?"
-                + "username=" + emailSettings.emailUsername 
-                + "&password=" + emailSettings.emailPassword
-                + "&unseen=true"
-                + "&fetchSize=100"
-                + "&searchTerm.fromSentDate=now-24h"
-                + "&disconnect=true"
-                + "&connectionTimeout=20000"
-                + "&consumer.initialDelay=1000"
-                + "&consumer.delay=600000"
-                + "&debugMode=true"
-        ) 
+        from(fromUri) 
         .log("Received a request") 
-        .process(emailRouteProcessor)
-        .setHeader("CamelTelegramChatId", constant(telegramSettings.telegramChatId))
-        .inOnly("telegram:bots/" + telegramSettings.telegramBotToken);
+        .process(fromRouteProcessor)
+//        .setHeader("CamelTelegramChatId", constant(telegramSettings.telegramChatId))
+        .inOnly(toUri);
     }
     
 }

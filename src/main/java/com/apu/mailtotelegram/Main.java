@@ -7,6 +7,8 @@ package com.apu.mailtotelegram;
 
 import com.apu.mailtotelegram.email.EmailRouteBuilder;
 import com.apu.mailtotelegram.email.EmailProcessor;
+import com.apu.mailtotelegram.email.TelegramProcessor;
+import com.apu.mailtotelegram.error.ErrorProcessor;
 import com.apu.mailtotelegram.settings.EmailSettings;
 import com.apu.mailtotelegram.settings.Settings;
 import com.apu.mailtotelegram.settings.TelegramSettings;
@@ -42,12 +44,35 @@ public class Main {
         CamelContext context = new DefaultCamelContext();        
         try {  
             Processor emailRouteProcessor = 
-                    new EmailProcessor(telegramSettings);
+                    new EmailProcessor();
+            Processor telegramRouteProcessor = 
+                    new TelegramProcessor(telegramSettings);
+            
+            Processor errorProcessor = new ErrorProcessor();
+            
+            String fromUri = 
+                    "pop3://" 
+                    + emailSettings.emailHost + ":" + emailSettings.emailPort 
+                    + "?"
+                    + "username=" + emailSettings.emailUsername 
+                    + "&password=" + emailSettings.emailPassword
+                    + "&unseen=true"
+                    + "&fetchSize=5"
+                    + "&searchTerm.fromSentDate=now-24h"
+                    + "&disconnect=true"
+                    + "&connectionTimeout=20000"
+                    + "&consumer.initialDelay=1000"
+                    + "&consumer.delay=600000"
+                    + "&debugMode=true";
+            
+            String toUri = "telegram:bots/" + telegramSettings.telegramBotToken;
 
             RouteBuilder emailRouteBuilder = 
-                    new EmailRouteBuilder(emailRouteProcessor, 
-                                            emailSettings,
-                                            telegramSettings); 
+                    new EmailRouteBuilder(fromUri,
+                                            emailRouteProcessor,  
+                                            telegramRouteProcessor,
+                                            toUri,
+                                            errorProcessor); 
 
             context.addRoutes(emailRouteBuilder);               
             context.start();        
