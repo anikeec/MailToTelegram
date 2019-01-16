@@ -51,7 +51,7 @@ public class EmailRouteBuilder extends RouteBuilder {
         from(fromUri) 
         .log("Received a request") 
         .process(fromRouteProcessor)
-//        .setHeader("CamelTelegramChatId", constant(telegramSettings.telegramChatId))
+        .process(toRouteProcessor)
         .inOnly(toUri);
     }
     
