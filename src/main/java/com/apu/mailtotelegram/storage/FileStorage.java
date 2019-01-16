@@ -24,7 +24,7 @@ public class FileStorage<T> implements Storage<T> {
     }
 
     @Override
-    public void add(T data) {
+    public void add(T data) throws StorageException {
         if(!(data instanceof String)) return;
         
         try {
@@ -34,31 +34,37 @@ public class FileStorage<T> implements Storage<T> {
             bufferWriter.close();
         }
         catch (IOException e) {
-            LOGGER.error(ExceptionUtils.getStackTrace(e));
+            throw new StorageException("Can't add data to storage file. \r\n" + e);
         }               
     }
 
     @Override
-    public boolean find(T data) {
+    public boolean find(T data) throws StorageException {
         if(!(data instanceof String)) return false;
         BufferedReader reader = null;
         try {
-            reader = new BufferedReader(new InputStreamReader(new FileInputStream(new File(storageFileName))));
+            File file = new File(storageFileName);
+            FileInputStream fis;
+            try {
+                fis = new FileInputStream(file);
+            } catch (FileNotFoundException e) {
+                throw new StorageException("Can't open storage file. \r\n" + e);
+            }
+            InputStreamReader isreader = new InputStreamReader(fis);
+            reader = new BufferedReader(isreader);
             String str;
             while((str = reader.readLine()) != null) {
                 if(str.equals((String)data))
                         return true;
             }
-        } catch (FileNotFoundException e) {
-            LOGGER.error(ExceptionUtils.getStackTrace(e));
         } catch (IOException e) {
-            LOGGER.error(ExceptionUtils.getStackTrace(e));
+            throw new StorageException("Can't read from storage file. \r\n" + e);
         } finally {
             try {
                 if(reader != null)
                     reader.close();
             } catch (IOException e) {
-                LOGGER.error(ExceptionUtils.getStackTrace(e));
+                LOGGER.error("Can't close reader." + ExceptionUtils.getStackTrace(e));
             }
         }
         return false;
