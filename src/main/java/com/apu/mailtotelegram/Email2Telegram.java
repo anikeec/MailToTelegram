@@ -5,30 +5,38 @@
  */
 package com.apu.mailtotelegram;
 
-import com.apu.mailtotelegram.email.EmailRouteBuilder;
+import org.apache.camel.CamelContext;
+import org.apache.camel.Processor;
+import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.impl.DefaultCamelContext;
+import org.apache.camel.main.Main;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.apu.mailtotelegram.email.EmailProcessor;
+import com.apu.mailtotelegram.email.EmailRouteBuilder;
 import com.apu.mailtotelegram.email.TelegramProcessor;
 import com.apu.mailtotelegram.error.ErrorProcessor;
 import com.apu.mailtotelegram.settings.EmailSettings;
 import com.apu.mailtotelegram.settings.Settings;
 import com.apu.mailtotelegram.settings.TelegramSettings;
 import com.apu.mailtotelegram.utils.log.Logging;
-import org.apache.camel.CamelContext;
-import org.apache.camel.Processor;
-import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.impl.DefaultCamelContext;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 
 /**
  *
  * @author apu
  */
-public class Main {
-
-    private static Logger LOGGER = LogManager.getLogger(Main.class.getName());
+public class Email2Telegram {
+    
+    private static Logger LOGGER = LogManager.getLogger(Email2Telegram.class.getName());
+    private Main main;
     
     public static void main(String[] args) throws Exception {
+        Email2Telegram application = new Email2Telegram();
+        application.start();
+    }
+    
+    public void start() throws Exception {
         
         System.setOut(Logging.createLoggingProxy(System.out));
         
@@ -41,16 +49,17 @@ public class Main {
         TelegramSettings telegramSettings = new TelegramSettings();
         Settings.loadTelegramSettingsFromFile(telegramSettings);
         
-        CamelContext context = new DefaultCamelContext();        
-        try {  
-            Processor emailRouteProcessor = 
-                    new EmailProcessor();
-            Processor telegramRouteProcessor = 
+        main = new Main();
+        
+//        CamelContext context = new DefaultCamelContext();         
+        Processor emailRouteProcessor = 
+                new EmailProcessor();
+        Processor telegramRouteProcessor = 
                     new TelegramProcessor(telegramSettings);
             
-            Processor errorProcessor = new ErrorProcessor();
+        Processor errorProcessor = new ErrorProcessor();
             
-            String fromUri = 
+        String fromUri = 
                     "pop3://" 
                     + emailSettings.emailHost + ":" + emailSettings.emailPort 
                     + "?"
@@ -65,21 +74,18 @@ public class Main {
                     + "&consumer.delay=600000"
                     + "&debugMode=true";
             
-            String toUri = "telegram:bots/" + telegramSettings.telegramBotToken;
+        String toUri = "telegram:bots/" + telegramSettings.telegramBotToken;
 
-            RouteBuilder emailRouteBuilder = 
+        RouteBuilder emailRouteBuilder = 
                     new EmailRouteBuilder(fromUri,
                                             emailRouteProcessor,  
                                             telegramRouteProcessor,
                                             toUri,
                                             errorProcessor); 
 
-            context.addRoutes(emailRouteBuilder);               
-            context.start();        
-            while(true) {}       
-        } finally {        
-            context.stop();        
-        }
+        main.addRouteBuilder(emailRouteBuilder);
+        main.addMainListener(new Events());              
+        main.run();                   
     }
     
 }
