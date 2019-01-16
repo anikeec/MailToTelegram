@@ -8,6 +8,7 @@ import javax.mail.BodyPart;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMultipart;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -156,11 +157,9 @@ public class DecodedEmail {
                 }
             }
         } catch (MessagingException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOGGER.error(ExceptionUtils.getStackTrace(e));
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOGGER.error(ExceptionUtils.getStackTrace(e));
         }
     }
 
@@ -174,14 +173,12 @@ public class DecodedEmail {
             sb.append("From: ").append(this.getHeadFrom()).append("\r\n");
         if (this.getHeadCopy() != null)
             sb.append("Copy: ").append(this.getHeadCopy()).append("\r\n");
-        if (this.getHeadDate() != null) {
+        if (this.getHeadDate() != null)
             sb.append("Date: ").append(StringUtils.dateFormat(this.getHeadDate())).append("\r\n");
-        }
         if (this.getHeadSubject() != null)
             sb.append("Subject: ").append(this.getHeadSubject()).append("\r\n");
         if (this.getBody() != null)
             sb.append("Body: \r\n").append(this.getBody()).append("\r\n");
-
         return sb.toString();
     }
 
