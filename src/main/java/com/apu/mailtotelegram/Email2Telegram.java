@@ -5,11 +5,10 @@
  */
 package com.apu.mailtotelegram;
 
-import org.apache.camel.CamelContext;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.main.Main;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -29,11 +28,30 @@ import com.apu.mailtotelegram.utils.log.Logging;
 public class Email2Telegram {
     
     private static Logger LOGGER = LogManager.getLogger(Email2Telegram.class.getName());
+    private static long APP_RESTART_DELAY = 10000;
+    private static int RESTART_MAX_AMOUNT = 10;
     private Main main;
     
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         Email2Telegram application = new Email2Telegram();
-        application.start();
+        int restartMaxAmount = 0;
+        while(restartMaxAmount < RESTART_MAX_AMOUNT) {
+            try {
+                application.start();
+            } catch (Exception e) {
+                LOGGER.error(ExceptionUtils.getStackTrace(e));
+                LOGGER.debug("Delay before restart application");
+                try {
+                    Thread.sleep(APP_RESTART_DELAY);
+                } catch (InterruptedException e1) {
+                    LOGGER.debug("Restart delay was interrupted.");
+                }
+                restartMaxAmount++;
+                LOGGER.debug("Try to restart application. Attempt " + restartMaxAmount);
+            }
+        }
+        LOGGER.error("Application has been restarted " + restartMaxAmount +  " times. "
+                + "So the application will be shutting down.");
     }
     
     public void start() throws Exception {
@@ -44,14 +62,13 @@ public class Email2Telegram {
 
         //load settings from file
         EmailSettings emailSettings = new EmailSettings();
-        Settings.loadEmailSettingsFromFile(emailSettings);
-        
         TelegramSettings telegramSettings = new TelegramSettings();
-        Settings.loadTelegramSettingsFromFile(telegramSettings);
+        Settings.loadEmailSettingsFromFile(emailSettings);
+        Settings.loadTelegramSettingsFromFile(telegramSettings);    
+        
         
         main = new Main();
-        
-//        CamelContext context = new DefaultCamelContext();         
+              
         Processor emailRouteProcessor = 
                 new EmailProcessor();
         Processor telegramRouteProcessor = 
