@@ -5,14 +5,11 @@
  */
 package com.apu.mailtotelegram.email;
 
-import com.apu.mailtotelegram.email.utils.EmailUtils;
-import com.apu.mailtotelegram.email.utils.StringUtils;
 import com.apu.mailtotelegram.storage.FileStorage;
 import com.apu.mailtotelegram.storage.Storage;
-import java.util.Date;
+import com.apu.mailtotelegram.storage.StorageException;
+
 import java.util.Map;
-import javax.mail.BodyPart;
-import javax.mail.internet.MimeMultipart;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.log4j.LogManager;
@@ -36,7 +33,7 @@ public class EmailProcessor implements Processor {
     }    
     
     @Override
-    public void process(Exchange exchange) throws Exception {
+    public void process(Exchange exchange) throws StorageException {
         Map<String, Object> headers = exchange.getIn().getHeaders();
 
         Object messageUid = headers.get("Message-ID");
@@ -52,91 +49,29 @@ public class EmailProcessor implements Processor {
                 headCopy + "\r\n" + 
                 headDate + "\r\n" + 
                 headSubject + "\r\n");
-
-        if(messageUid != null) {
-            String messageUidStr = (String)messageUid;
-            // check if this message has already received
-            if (storage.find(messageUidStr)) {
-                LOGGER.info("MESSAGE with id " + messageUidStr + " exist.");
-                exchange.setProperty(Exchange.ROUTE_STOP, Boolean.TRUE); 
-                return;
-            }
-            storage.add(messageUidStr);
+        
+        DecodedEmail decodedEmail = new DecodedEmail();
+        decodedEmail.putEncodedMessageUid(messageUid);
+        decodedEmail.putEncodedHeadTo(headTo);
+        decodedEmail.putEncodedHeadFrom(headFrom);
+        decodedEmail.putEncodedHeadCopy(headCopy);
+        decodedEmail.putEncodedHeadDate(headDate);
+        decodedEmail.putEncodedHeadSubject(headSubject);
+        decodedEmail.putEncodedContentType(headers.get("content-Type"));
+        
+        String messageUidStr = decodedEmail.getMessageUid();
+        // check if this message has already received
+        if (storage.find(messageUidStr)) {
+            LOGGER.info("MESSAGE with id " + messageUidStr + " exist.");
+            exchange.setProperty(Exchange.ROUTE_STOP, Boolean.TRUE); 
+            return;
         }
-
-        StringBuilder sb = new StringBuilder();
-
-        sb.append("Message.").append("\r\n");
+        storage.add(messageUidStr);
         
-        if(headTo != null) {
-            String decodedAddrTo = 
-                    EmailUtils.getDecodedStr((String)headTo);
-            sb.append("To: ")
-                .append(EmailUtils.extractAddressesFromEmail(decodedAddrTo))
-                .append("\r\n");
-        }
+        decodedEmail.putEncodedBody(exchange.getIn().getBody());       
         
-        if(headFrom != null) {
-            String decodedAddrFrom = 
-                    EmailUtils.getDecodedStr((String)headFrom);
-            sb.append("From: ")
-                .append(EmailUtils.extractAddressesFromEmail(decodedAddrFrom))
-                .append("\r\n");
-        }
-        
-        if(headCopy != null) {
-            String decodedAddrCopy = 
-                    EmailUtils.getDecodedStr((String)headCopy);
-            sb.append("Copy: ")
-                .append(EmailUtils.extractAddressesFromEmail(decodedAddrCopy))
-                .append("\r\n");
-        }
-        
-        if(headDate != null) {
-            Date date = StringUtils.dateFormat((String)headDate);
-            sb.append("Date: ")
-                .append(StringUtils.dateFormat(date))
-                .append("\r\n");
-        }        
-        
-        if(headSubject != null)
-            sb.append("Subject: ")
-                .append("\r\n")
-                .append(EmailUtils.getDecodedStr((String)headSubject))
-                .append("\r\n");
-
-        String content = (String)headers.get("content-Type");        
-        
-        sb.append("Body: ");
-        Object body = exchange.getIn().getBody();
-        
-        if((body != null) && (body instanceof MimeMultipart)) {
-            MimeMultipart bodyMultipart = (MimeMultipart)body;
-            int amount = bodyMultipart.getCount();
-            BodyPart bp;
-            String contentType;
-            Object contentObj;
-            for(int i=0; i<amount; i++) {
-                bp = bodyMultipart.getBodyPart(i);
-                contentType = bp.getContentType();
-                contentObj = bp.getContent();
-                if(contentType.contains("text/plain") && (contentObj != null)) {
-                    sb.append(EmailUtils.handleTextPlain(contentObj));
-                } else if(contentType.contains("text/html") && (contentObj != null)) {
-                    sb.append(EmailUtils.handleTextHtml(contentObj));
-                }                       
-            }
-        } else {
-            if(content.contains("text/html") && (body != null)) {           
-                sb.append(EmailUtils.handleTextHtml(body));
-            } else if(content.contains("text/plain") && (body != null)) {
-                sb.append(EmailUtils.handleTextPlain(body));
-            }
-        }
-
-        sb.append("\r\n");
-        
-        exchange.getIn().setBody(sb.toString());
+        //send decoded email message 
+        exchange.getIn().setBody(decodedEmail.toString());
         
     }
     
