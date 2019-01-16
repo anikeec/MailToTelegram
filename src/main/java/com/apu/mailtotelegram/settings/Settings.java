@@ -21,22 +21,22 @@ public class Settings {
         if(props.containsKey(EMAIL_HOST_PROPERTY)) 
             settings.emailHost = props.getProperty(EMAIL_HOST_PROPERTY);
         else
-            throw new IllegalArgumentException("Needed parametes is absent.");
+            throw new IllegalArgumentException(EMAIL_HOST_PROPERTY + " parametes is absent.");
         
         if(props.containsKey(EMAIL_PORT_PROPERTY)) 
             settings.emailPort = props.getProperty(EMAIL_PORT_PROPERTY);
         else
-            throw new IllegalArgumentException("Needed parametes is absent.");
+            throw new IllegalArgumentException(EMAIL_PORT_PROPERTY + " parametes is absent.");
         
         if(props.containsKey(EMAIL_USERNAME_PROPERTY)) 
             settings.emailUsername = props.getProperty(EMAIL_USERNAME_PROPERTY);
         else
-            throw new IllegalArgumentException("Needed parametes is absent.");
+            throw new IllegalArgumentException(EMAIL_USERNAME_PROPERTY + " parametes is absent.");
         
         if(props.containsKey(EMAIL_PASSWORD_PROPERTY)) 
             settings.emailPassword = props.getProperty(EMAIL_PASSWORD_PROPERTY);
         else
-            throw new IllegalArgumentException("Needed parametes is absent.");
+            throw new IllegalArgumentException(EMAIL_PASSWORD_PROPERTY + " parametes is absent.");
         
     }
     
@@ -48,12 +48,12 @@ public class Settings {
         if(props.containsKey(TELEGRAM_BOT_TOKEN_PROPERTY)) 
             settings.telegramBotToken = props.getProperty(TELEGRAM_BOT_TOKEN_PROPERTY);
         else
-            throw new IllegalArgumentException("Needed parametes is absent.");
+            throw new IllegalArgumentException(TELEGRAM_BOT_TOKEN_PROPERTY + " parametes is absent.");
         
         if(props.containsKey(TELEGRAM_CHAT_ID_PROPERTY)) 
             settings.telegramChatId = props.getProperty(TELEGRAM_CHAT_ID_PROPERTY);
         else
-            throw new IllegalArgumentException("Needed parametes is absent.");
+            throw new IllegalArgumentException(TELEGRAM_CHAT_ID_PROPERTY + " parametes is absent.");
     }
     
 }
