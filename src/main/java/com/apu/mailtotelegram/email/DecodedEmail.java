@@ -21,7 +21,8 @@ import lombok.Setter;
 
 public class DecodedEmail {
 
-    private final static Logger LOGGER = LogManager.getLogger(DecodedEmail.class.getName());
+    private final static Logger LOGGER = 
+                        LogManager.getLogger(DecodedEmail.class.getName());
 
     @Getter @Setter
     private String messageUid;
@@ -137,15 +138,17 @@ public class DecodedEmail {
                 int amount = bodyMultipart.getCount();
 
                 BodyPart bp;
-                String contentType;
+                String contentTypeLocal;
                 Object contentObj;
                 for (int i = 0; i < amount; i++) {
                     bp = bodyMultipart.getBodyPart(i);
-                    contentType = bp.getContentType();
+                    contentTypeLocal = bp.getContentType();
                     contentObj = bp.getContent();
-                    if (contentType.contains("text/plain") && (contentObj != null)) {
+                    if (contentTypeLocal.contains("text/plain") 
+                                && (contentObj != null)) {
                         this.setBody(EmailUtils.handleTextPlain(contentObj));
-                    } else if (contentType.contains("text/html") && (contentObj != null)) {
+                    } else if (contentTypeLocal.contains("text/html") 
+                                && (contentObj != null)) {
                         this.setBody(EmailUtils.handleTextHtml(contentObj));
                     }
                 }
@@ -174,7 +177,9 @@ public class DecodedEmail {
         if (this.getHeadCopy() != null)
             sb.append("Copy: ").append(this.getHeadCopy()).append("\r\n");
         if (this.getHeadDate() != null)
-            sb.append("Date: ").append(StringUtils.dateFormat(this.getHeadDate())).append("\r\n");
+            sb.append("Date: ")
+                    .append(StringUtils.dateFormat(this.getHeadDate()))
+                    .append("\r\n");
         if (this.getHeadSubject() != null)
             sb.append("Subject: ").append(this.getHeadSubject()).append("\r\n");
         if (this.getBody() != null)

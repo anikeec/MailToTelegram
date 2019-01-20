@@ -5,12 +5,10 @@
  */
 package com.apu.mailtotelegram.email;
 
-import com.apu.mailtotelegram.settings.TelegramSettings;
+import com.apu.mailtotelegram.settings.entity.TelegramSettings;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.component.telegram.TelegramConstants;
-
-import static org.apache.camel.builder.Builder.constant;
 
 /**
  *
@@ -27,7 +25,7 @@ public class TelegramProcessor implements Processor {
     @Override
     public void process(Exchange exchange) throws Exception {
         exchange.getIn().setHeader(TelegramConstants.TELEGRAM_CHAT_ID, 
-                                        telegramSettings.telegramChatId);
+                                        telegramSettings.getChatId());
     }
     
 }

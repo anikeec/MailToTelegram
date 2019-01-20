@@ -16,9 +16,9 @@ import com.apu.mailtotelegram.email.EmailProcessor;
 import com.apu.mailtotelegram.email.EmailRouteBuilder;
 import com.apu.mailtotelegram.email.TelegramProcessor;
 import com.apu.mailtotelegram.error.ErrorProcessor;
-import com.apu.mailtotelegram.settings.EmailSettings;
+import com.apu.mailtotelegram.settings.entity.EmailSettings;
 import com.apu.mailtotelegram.settings.Settings;
-import com.apu.mailtotelegram.settings.TelegramSettings;
+import com.apu.mailtotelegram.settings.entity.TelegramSettings;
 import com.apu.mailtotelegram.utils.log.Logging;
 
 /**
@@ -27,10 +27,10 @@ import com.apu.mailtotelegram.utils.log.Logging;
  */
 public class Email2Telegram {
     
-    private static Logger LOGGER = LogManager.getLogger(Email2Telegram.class.getName());
-    private static long APP_RESTART_DELAY = 10000;
-    private static int RESTART_MAX_AMOUNT = 10;
-    private Main main;
+    private static final Logger LOGGER = 
+                    LogManager.getLogger(Email2Telegram.class.getName());
+    private static final long APP_RESTART_DELAY = 10000;
+    private static final int RESTART_MAX_AMOUNT = 10;
     
     public static void main(String[] args) {
         Email2Telegram application = new Email2Telegram();
@@ -67,7 +67,7 @@ public class Email2Telegram {
         Settings.loadTelegramSettingsFromFile(telegramSettings);    
         
         
-        main = new Main();
+        Main main = new Main();
               
         Processor emailRouteProcessor = 
                 new EmailProcessor();
@@ -78,10 +78,12 @@ public class Email2Telegram {
             
         String fromUri = 
                     "pop3://" 
-                    + emailSettings.emailHost + ":" + emailSettings.emailPort 
+                    + emailSettings.getHost() 
+                    + ":" 
+                    + emailSettings.getPort()
                     + "?"
-                    + "username=" + emailSettings.emailUsername 
-                    + "&password=" + emailSettings.emailPassword
+                    + "username=" + emailSettings.getUsername()
+                    + "&password=" + emailSettings.getPassword()
                     + "&unseen=true"
                     + "&fetchSize=5"
                     + "&searchTerm.fromSentDate=now-24h"
@@ -91,7 +93,7 @@ public class Email2Telegram {
                     + "&consumer.delay=600000"
                     + "&debugMode=true";
             
-        String toUri = "telegram:bots/" + telegramSettings.telegramBotToken;
+        String toUri = "telegram:bots/" + telegramSettings.getBotToken();
 
         RouteBuilder emailRouteBuilder = 
                     new EmailRouteBuilder(fromUri,

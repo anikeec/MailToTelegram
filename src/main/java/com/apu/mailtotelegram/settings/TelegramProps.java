@@ -9,9 +9,9 @@ package com.apu.mailtotelegram.settings;
  *
  * @author apu
  */
-public class TelegramSettings {
+public class TelegramProps {
     
-    public String telegramBotToken;
-    public String telegramChatId;
+    public final static String BOT_TOKEN_PROP = "telegram.bot.token";
+    public final static String CHAT_ID_PROP = "telegram.chat.id";
     
 }
