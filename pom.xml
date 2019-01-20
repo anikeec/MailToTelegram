@@ -9,6 +9,7 @@
         <env.camel.version>2.22.1</env.camel.version>
         <greenmail.version>1.4.1</greenmail.version>
         <javax-mail.version>1.5.0</javax-mail.version>
+        <jaxb.version>2.3.0</jaxb.version>
         <jdk.version>1.8</jdk.version>
         <junit.version>4.12</junit.version>
         <log4j.version>2.6.1</log4j.version>
@@ -121,12 +122,12 @@
         <dependency>
             <groupId>javax.xml.bind</groupId>
             <artifactId>jaxb-api</artifactId>
-            <version>2.3.0</version>
+            <version>${jaxb.version}</version>
         </dependency>
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-impl</artifactId>
-            <version>2.3.0</version>
+            <version>${jaxb.version}</version>
         </dependency>
     </dependencies>
     
@@ -143,32 +144,8 @@
                 </includes>
             </resource>
         </resources>
-        <plugins>
-            
-<!--            <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>2.6</version>
-                <executions>
-                  <execution>
-                    <id>copy-resources-1</id>
-                    <phase>validate</phase>
-                    <goals>
-                      <goal>copy-resources</goal>
-                    </goals>
-                    <configuration>
-                      <outputDirectory>${basedir}/target/</outputDirectory>
-                      <resources>
-                        <resource>
-                            <directory>resources</directory>
-                            <filtering>true</filtering>
-                        </resource>
-                      </resources>
-                    </configuration>
-                  </execution>
-                </executions>
-              </plugin>-->
-            
-            
+        
+        <plugins>           
             <!-- download source code in Eclipse, best practice -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -221,5 +198,6 @@
                 </executions>
             </plugin>
         </plugins>
+        
     </build>
 </project>
