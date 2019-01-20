@@ -43,7 +43,7 @@ public class EmailProcessor implements Processor {
         Object headDate = headers.get("Date");
         Object headSubject = headers.get("Subject");
 
-        System.out.println(
+        LOGGER.info(
                 headTo + "\r\n" + 
                 headFrom + "\r\n" + 
                 headCopy + "\r\n" + 
