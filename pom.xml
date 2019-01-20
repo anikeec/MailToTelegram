@@ -6,25 +6,30 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
         <env.camel.version>2.22.1</env.camel.version>
+        <greenmail.version>1.4.1</greenmail.version>
+        <javax-mail.version>1.5.0</javax-mail.version>
+        <jdk.version>1.8</jdk.version>
+        <junit.version>4.12</junit.version>
         <log4j.version>2.6.1</log4j.version>
         <log4j.core.version>2.6.1</log4j.core.version> 
         <log4j.1.2.api.version>2.6.1</log4j.1.2.api.version>
-        <spring.version>3.2.2.RELEASE</spring.version>
-        <junit.version>4.12</junit.version>
-        <javax-mail.version>1.5.0</javax-mail.version>
-        <greenmail.version>1.4.1</greenmail.version>
+        <lombok.version>1.16.22</lombok.version>        
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.eclipse.plugin.version>2.9</maven.eclipse.plugin.version>
+        <maven.compiler.plugin.version>3.5.1</maven.compiler.plugin.version>
+        <maven.assembly.plugin.version>2.5.5</maven.assembly.plugin.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>        
+        <spring.version>3.2.2.RELEASE</spring.version>      
     </properties>
     <dependencies>
         <!--  Lombok --> 
         <dependency>
-        <groupId>org.projectlombok</groupId> 
-        <artifactId>lombok</artifactId> 
-        <version>1.16.22</version> 
-        <scope>provided</scope> 
+            <groupId>org.projectlombok</groupId> 
+            <artifactId>lombok</artifactId> 
+            <version>${lombok.version}</version> 
+            <scope>provided</scope> 
         </dependency>
             
         <!-- Camel -->
@@ -110,6 +115,111 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-context-support</artifactId>
             <version>${spring.version}</version>
-        </dependency>        
+        </dependency>     
+        
+        <!--XML-->              
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+            <version>2.3.0</version>
+        </dependency>
     </dependencies>
+    
+    <build>     
+        <!--<sourceDirectory>src/main/java</sourceDirectory>-->
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <targetPath>.</targetPath>
+                <includes>
+                    <include>log4j2.xml</include>
+                    <include>applicaion.properties</include>
+                    <include>appXMLContext.xml</include>
+                </includes>
+            </resource>
+        </resources>
+        <plugins>
+            
+<!--            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.6</version>
+                <executions>
+                  <execution>
+                    <id>copy-resources-1</id>
+                    <phase>validate</phase>
+                    <goals>
+                      <goal>copy-resources</goal>
+                    </goals>
+                    <configuration>
+                      <outputDirectory>${basedir}/target/</outputDirectory>
+                      <resources>
+                        <resource>
+                            <directory>resources</directory>
+                            <filtering>true</filtering>
+                        </resource>
+                      </resources>
+                    </configuration>
+                  </execution>
+                </executions>
+              </plugin>-->
+            
+            
+            <!-- download source code in Eclipse, best practice -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-eclipse-plugin</artifactId>
+                <version>${maven.eclipse.plugin.version}</version>
+                <configuration>
+                    <downloadSources>true</downloadSources>
+                    <downloadJavadocs>false</downloadJavadocs>
+                </configuration>
+            </plugin>
+
+            <!-- Set a compiler level -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven.compiler.plugin.version}</version>
+                <configuration>
+                    <source>${jdk.version}</source>
+                    <target>${jdk.version}</target>
+                </configuration>
+            </plugin>
+
+            <!-- Maven Assembly Plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>${maven.assembly.plugin.version}</version>
+                <configuration>
+                    <!-- get all project dependencies -->
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>                    
+                    <!-- MainClass in mainfest make a executable jar -->
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <mainClass>com.apu.mailtotelegram.Email2Telegram</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <!-- bind to the packaging phase -->
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

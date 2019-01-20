@@ -32,3 +32,4 @@ mvnw.cmd
 global.properties
 email.properties
 storage.txt
+*.properties
